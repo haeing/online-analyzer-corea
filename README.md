@@ -1,4 +1,4 @@
-# Running COREa
+# Running COREA
 
 ## View live data
 
@@ -13,7 +13,7 @@ cd /home/hanul/online-analyzer
 Open **http://localhost:9091** in a browser on the same computer.
 
 The display contains three canvases: `TPC_ADC2D`, `TPC_TDC2D`, and `TDC_FADC`.
-Press `Ctrl+C` in the terminal to stop COREa.
+Press `Ctrl+C` in the terminal to stop COREA.
 
 ## View a recorded data file
 
@@ -47,14 +47,14 @@ Replace `AXIS_USER` with your SSH username on axis.
 ssh -N -L 18901:localhost:8901 AXIS_USER@192.168.10.2
 ```
 
-Keep the tunnel open, then start COREa in another terminal on the analysis computer:
+Keep the tunnel open, then start COREA in another terminal on the analysis computer:
 
 ```bash
 cd /home/hanul/online-analyzer
 ./bin/corea param/corea/analyzer.conf localhost:18901
 ```
 
-## Build or rebuild COREa
+## Build or rebuild COREA
 
 ```bash
 cd /home/hanul/online-analyzer
@@ -62,7 +62,6 @@ make -C src/analyzer corea -j2
 ```
 
 Use the dedicated configuration, `param/corea/analyzer.conf`.
-The existing `analyzer_e72_online.conf` uses the E72 channel map.
 
 ## Use a different web port
 

@@ -1,4 +1,4 @@
-# COREa TPC display
+# COREA TPC display
 
 Build: `make -C src/analyzer corea` (also included in the normal build).
 
@@ -9,8 +9,7 @@ Build: `make -C src/analyzer corea` (also included in the normal build).
 ```
 
 After a data file ends, the last event stays available until Ctrl+C.
-Use this COREa configuration rather than analyzer_e72_online.conf, which uses
-the E72 ring channel map.
+Use the dedicated COREA configuration, `param/corea/analyzer.conf`.
 
 Open http://localhost:9091. An optional final argument selects another HTTP port.
 For an SSH host, forward the port with `ssh -L 9091:localhost:9091 hanul@HOST`.

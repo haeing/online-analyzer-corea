@@ -1,4 +1,4 @@
-// COREa display: mapping and orientation from online-corea/macro/online.C.
+// COREA display: mapping and orientation from online-corea/macro/online.C.
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -77,7 +77,7 @@ int process_begin(const std::vector<std::string>& argv)
     http.Register(canvas);
   }
   http.Begin();
-  std::cout << "COREa: 1024 rectangular pads, AsAd 0..3, AGET 0..3, channels 0..63\n"
+  std::cout << "COREA: 1024 rectangular pads, AsAd 0..3, AGET 0..3, channels 0..63\n"
             << "Browser: http://localhost:" << port << "/\n";
   return 0;
 }
@@ -99,7 +99,7 @@ int process_event()
         if(!count) continue;
         ++last_active_pads;
         if(count>n_bucket){
-          std::cerr << "COREa: waveform exceeds 512 buckets\n"; return 1;
+          std::cerr << "COREA: waveform exceeds 512 buckets\n"; return 1;
         }
         std::vector<double> samples(count);
         double base=0, peak=-1;
@@ -130,7 +130,7 @@ int process_event()
 
 int process_end()
 {
-  std::cout << "COREa: processed " << events_processed
+  std::cout << "COREA: processed " << events_processed
             << " events; last event has " << last_active_pads << " active pads.\n";
   if(!events_processed) return 0;
   std::cout << "Input finished. Keeping the last event available in the browser. "
