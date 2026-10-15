@@ -2,7 +2,7 @@
 #include <iostream>
 #include <TCanvas.h>
 #include <TH2Poly.h>
-#include <TH1D.h>
+#include <TH2D.h>
 #include <TROOT.h>
 #include "UnpackerManager.hh"
 #include "user_analyzer.hh"
@@ -18,11 +18,18 @@ int main(int argc, char** argv){
   auto tdc=dynamic_cast<TH2Poly*>(c->GetPrimitive("TPC_TDC2D"));assert(tdc);
   for(unsigned asad=0;asad<4;++asad)for(unsigned a=0;a<4;++a)for(unsigned ch=0;ch<64;++ch){
     unsigned pad=asad*256+a*64+ch+1;
-    assert(adc->GetBinContent(pad)==700+asad*100+a*10+ch);
+    assert(adc->GetBinContent(pad)==(pad==1 ? 100 : 700+asad*100+a*10+ch));
     assert(tdc->GetBinContent(pad)==300+ch%8);
   }
   c=static_cast<TCanvas*>(gROOT->GetListOfCanvases()->FindObject("TDC_FADC"));assert(c);
-  auto pulse=dynamic_cast<TH1D*>(c->GetPrimitive("TDC_FADC"));assert(pulse && pulse->GetNbinsX()==512);
-  assert(pulse->GetBinContent(308)==1193);assert(pulse->GetBinContent(512)==100);
-  std::cout<<"PASS: 3 canvases, all 1024 channel mappings, 512-bucket waveform, peak time and baseline\n";
+  auto pulse=dynamic_cast<TH2D*>(c->GetPrimitive("TDC_FADC"));assert(pulse && pulse->GetNbinsX()==512);
+  assert(pulse->GetNbinsY()==200);
+  assert(pulse->GetEntries()==512);
+  assert(pulse->GetBinContent(pulse->FindBin(300.,2000.))==1);
+  assert(pulse->GetBinContent(pulse->FindBin(511.,1900.))==1);
+  // A second processed event must accumulate another waveform, not reset it.
+  assert(analyzer::process_event()==0);
+  assert(pulse->GetEntries()==1024);
+  assert(pulse->GetBinContent(pulse->FindBin(300.,2000.))==2);
+  std::cout<<"PASS: 3 canvases, all 1024 channel mappings, raw-ADC selection, TH2D accumulation, 512 buckets, peak time and baseline\n";
 }

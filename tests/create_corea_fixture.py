@@ -11,6 +11,9 @@ for asad in range(4):
             for aget in range(4):
                 adc = (800 + asad * 100 + aget * 10 + channel
                        if bucket == 300 + channel % 8 else 100)
+                # High pedestal: raw-ADC winner differs from baseline-subtracted winner.
+                if asad == 0 and aget == 0 and channel == 0:
+                    adc = 2000 if bucket == 300 else 1900
                 payload += struct.pack('>H', (aget << 14) | adc)
     header = bytearray(256)
     header[1:4] = ((256 + len(payload)) // 256).to_bytes(3, 'big')

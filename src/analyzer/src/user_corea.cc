@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <TCanvas.h>
-#include <TH1D.h>
+#include <TH2D.h>
 #include <TH2Poly.h>
 #include <TList.h>
 #include <TROOT.h>
@@ -19,7 +19,7 @@ namespace analyzer {
 namespace {
 TH2Poly* charge = nullptr;
 TH2Poly* time_map = nullptr;
-TH1D* pulse = nullptr;
+TH2D* pulse = nullptr;
 constexpr unsigned n_asad = 4, n_aget = 4, n_ch = 64, n_bucket = 512;
 constexpr double threshold = 50.;
 unsigned long long events_processed = 0;
@@ -61,7 +61,8 @@ int process_begin(const std::vector<std::string>& argv)
   charge=new TH2Poly("TPC_ADC2D","TPC_ADC2D;z [mm];y [mm]",-60,60,-60,60);
   time_map=new TH2Poly("TPC_TDC2D","TPC_TDC2D;z [mm];y [mm]",-60,60,-60,60);
   geometry(charge); geometry(time_map);
-  pulse=new TH1D("TDC_FADC","TDC_FADC;Time bucket;ADC",n_bucket,-.5,n_bucket-.5);
+  pulse=new TH2D("TDC_FADC","TDC_FADC;Time bucket;ADC",
+                 n_bucket,0,n_bucket,200,0,4096);
   for(auto hist: std::vector<TH1*>{charge,time_map,pulse}){
     hist->SetDirectory(nullptr); hist->SetStats(false);
   }
@@ -73,7 +74,9 @@ int process_begin(const std::vector<std::string>& argv)
   http.Register(list);
   for(auto hist: std::vector<TH1*>{charge,time_map,pulse}){
     auto canvas=new TCanvas(hist->GetName(),hist->GetName(),800,700);
-    canvas->cd(); hist->Draw(hist==pulse ? "hist" : "colz");
+    canvas->cd();
+    if(hist==pulse) canvas->SetLogz();
+    hist->Draw("colz");
     http.Register(canvas);
   }
   http.Begin();
@@ -87,8 +90,12 @@ int process_event()
   auto& unpacker=hddaq::unpacker::GUnpacker::get_instance();
   static const auto device=unpacker.get_device_id("TPC");
   static const auto adc_id=unpacker.get_data_id("TPC","adc");
-  charge->Reset(""); time_map->Reset(""); pulse->Reset();
-  double best_height=-1;
+  const auto run=unpacker.get_run_number(), event=unpacker.get_event_number();
+  static int previous_run=-1;
+  if(run!=previous_run){ pulse->Reset(); previous_run=run; }
+  charge->Reset(""); time_map->Reset("");
+  double best_peak=-1;
+  std::vector<double> best_samples;
   unsigned best_pad=0;
   last_active_pads=0;
   for(unsigned asad=0; asad<n_asad; ++asad)
@@ -114,12 +121,12 @@ int process_event()
         const unsigned pad=asad*256+aget*64+ch+1;
         charge->SetBinContent(pad,height);
         if(height>threshold) time_map->SetBinContent(pad,peak_time);
-        if(height>best_height){
-          best_height=height; best_pad=pad; pulse->Reset();
-          for(unsigned t=0; t<count; ++t) pulse->SetBinContent(t+1,samples[t]);
+        if(peak>best_peak){
+          best_peak=peak; best_pad=pad; best_samples=std::move(samples);
         }
       }
-  const auto run=unpacker.get_run_number(), event=unpacker.get_event_number();
+  if(best_peak>0)
+    for(size_t t=0; t<best_samples.size(); ++t) pulse->Fill(t,best_samples[t]);
   charge->SetTitle(Form("TPC_ADC2D run%d event%d (peak - baseline)",run,event));
   time_map->SetTitle(Form("TPC_TDC2D run%d event%d (threshold %.0f ADC)",run,event,threshold));
   pulse->SetTitle(Form("TDC_FADC run%d event%d pad%u;Time bucket;ADC",run,event,best_pad));

@@ -15,8 +15,10 @@ Open http://localhost:9091. An optional final argument selects another HTTP port
 For an SSH host, forward the port with `ssh -L 9091:localhost:9091 hanul@HOST`.
 
 The three canvases are TPC_ADC2D (peak minus baseline), TPC_TDC2D
-(peak time for signals above 50 ADC), and TDC_FADC (the strongest pad's raw
-waveform). Baseline is the mean of the first 100 available samples. Both
+(peak time for signals above 50 ADC), and TDC_FADC (a TH2D accumulating one waveform per event,
+selected by the largest raw ADC sample). Its axes are time bucket and ADC;
+color shows sample counts. It resets on run changes or the web Reset command.
+Baseline for TPC_ADC2D is the mean of the first 100 available samples. Both
 170- and 512-sample waveforms are accepted. Data files must be HDDAQ events,
 not standalone GET `.graw` frames or merged raw GET files.
 
