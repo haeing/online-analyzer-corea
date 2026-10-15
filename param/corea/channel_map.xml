@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<channel_map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/channel_map.xsd">
+  <DAQNode node_id="1" name="corea_eb">
+    <GetCoBoMaster node_id="0xcb0" name="cobo0">
+      <for var="asad" from="0" to="3"><GetAsAd address="asad">
+        <for var="ch" from="0" to="271"><for var="data" from="0" to="2">
+          <FE ch="ch" data="data"><D Device="TPC" plane="asad" ch="ch" data="data"/></FE>
+        </for></for>
+      </GetAsAd></for>
+    </GetCoBoMaster>
+  </DAQNode>
+</channel_map>

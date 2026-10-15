@@ -1,0 +1,22 @@
+# gitignore
+
+*.[doa]
+*.pcm
+*.so
+*~
+\#*
+.\#*
+*.sw[nop]
+*.pdf
+*.root
+backup/
+bin/*
+include/*
+param/*
+!param/corea/
+src/analyzer/dict/*
+src/main/dict/*
+data
+data_bench
+Makefile
+common.mk

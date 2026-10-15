@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<digit_data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/digit.xsd">
+  <device id="255" name="null"/>
+  <device id="70" name="TPC" type="TPC">
+    <for var="asad" from="0" to="3"><plane id="asad">
+      <for var="ch" from="0" to="271"><ch id="ch">
+        <data id="0" name="adc"/>
+        <data id="1" name="tdc_high"/>
+        <data id="2" name="tdc_low"/>
+      </ch></for>
+    </plane></for>
+  </device>
+</digit_data>
